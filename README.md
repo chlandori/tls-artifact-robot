@@ -39,3 +39,15 @@ Exports from WSL to Windows Server C:\letsencrypt as a PFX (PKCS#12)
 ```bash
 ./export-to-pfx.sh app1.example.com
 ```
+
+### Import PFX to LocalMachine\My
+
+```powershell
+.\import-pfx.ps1 -Domain app1.example.com
+```
+
+### Set Windows Admin Center TLS Certificate
+
+```powershell
+.\set-waccert.ps1 app1.example.com
+```
