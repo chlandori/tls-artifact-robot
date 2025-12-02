@@ -17,22 +17,6 @@ using the `tls-artifact-robot` container. It exposes three core functions:
 - `tls-artifact-robot` container image built or pulled locally
 - A persistent volume for certificates (e.g. `C:\letsencrypt`)
 
-``` powershell
-# === Add current user to docker-users group ===
-# Run this script in an elevated PowerShell session (Run as Administrator)
-
-# Get the current username
-$User = "$env:USERDOMAIN\$env:USERNAME"
-
-# Add the user to the docker-users group
-Add-LocalGroupMember -Group "docker-users" -Member $User
-
-# Confirm membership
-Get-LocalGroupMember -Group "docker-users"
-```
-
----
-
 ## 🔧 Installation
 
 1. Clone or download this repository.
@@ -45,7 +29,7 @@ Get-LocalGroupMember -Group "docker-users"
 
 ## 🚀 Usage
 
-1. Create new 
+1. Create new
 
 ``` powershell
 New-TlsCert -Domains "core.example.com","www.core.example.com" -Email "admin@example.com"
@@ -79,5 +63,18 @@ AutoRenew-TlsCert
 
 ``` powershell
 docker run --rm -v C:\letsencrypt:/etc/letsencrypt tls-artifact-robot certbot renew --dry-run
-``` 
+```
 
+## Example Usage
+
+``` powershell
+docker build -t tls-artifact-robot .
+docker run --rm `
+  -v C:/letsencrypt:/etc/letsencrypt `
+  tls-artifact-robot `
+  certonly --standalone `
+  -d core.example.com `
+  -d dev.example.com `
+  -d db.example.com `
+  --non-interactive --agree-tos -m admin@example.com
+```
