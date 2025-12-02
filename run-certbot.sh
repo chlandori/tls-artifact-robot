@@ -17,7 +17,14 @@ for DOMAIN in "$@"; do
 done
 
 # Run certbot inside Docker
-docker run --rm \
-  -v /mnt/c/letsencrypt:/etc/letsencrypt \
-  tls-artifact-robot certbot certonly \
-  --standalone -m "$EMAIL" --agree-tos $DOMAIN_ARGS
+certbot certonly \
+  --manual --preferred-challenges dns \
+  -m "$EMAIL" --agree-tos $DOMAIN_ARGS
+
+# Copy certificates to Windows directory
+WIN_CERT_DIR="/mnt/c/letsencrypt/$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$WIN_CERT_DIR"
+cp -r /etc/letsencrypt/live "$WIN_CERT_DIR/"live
+cp -r /etc/letsencrypt/archive "$WIN_CERT_DIR/archive"
+cp /etc/letsencrypt/renewal/* "$WIN_CERT_DIR/renewal/"
+echo "Certificates copied to $WIN_CERT_DIR"

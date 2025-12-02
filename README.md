@@ -1,80 +1,33 @@
+# tls-artifact-robot
 
-# TLS Artifact Robot – PowerShell Module
-
-This module provides a simple PowerShell interface to manage TLS certificates
-using the `tls-artifact-robot` container. It exposes three core functions:
-
-1. **New-TlsCert** – Create new certificates
-2. **Renew-TlsCert** – Renew certificates on demand
-3. **AutoRenew-TlsCert** – Schedule automatic renewals via Windows Task Scheduler
+A lightweight utility for Windows Server 2025 sysops to manage TLS certificates using **WSL2** and **Ubuntu LTS**.  
+This project wraps [Certbot](https://certbot.eff.org/) inside WSL, outputting certificates directly to the Windows host at `C:\letsencrypt`.
 
 ---
 
-## 📦 Prerequisites
+## ✨ Features
 
-- Windows Server with PowerShell 5+ or PowerShell Core
-- Docker installed and running
-- `tls-artifact-robot` container image built or pulled locally
-- A persistent volume for certificates (e.g. `C:\letsencrypt`)
+- Runs inside **WSL2 Ubuntu LTS** environment on Windows Server 2025.
+- Uses Certbot for certificate issuance and renewal.
+- Supports **DNS-01 challenge** for private servers (no need to expose ports).
+- Outputs certificates to the Windows host via `/mnt/c/letsencrypt` → `C:\letsencrypt`.
+- Designed for sysops who want a clean, repeatable TLS ritual.
 
-## 🔧 Installation
-
-1. Clone or download this repository.
-2. Copy the module file `TlsArtifactRobot.psm1` to a working directory.
-3. Import the module in PowerShell:
-
-```powershell
-   Import-Module .\TlsArtifactRobot.psm1
-```
+---
 
 ## 🚀 Usage
 
-1. Create new
+### Configure Windows Server Host
 
 ``` powershell
-New-TlsCert -Domains "core.example.com","www.core.example.com" -Email "admin@example.com"
+.\host-wsl-config.ps1
+wsl
 ```
 
-* Issues a new certificate for the specified domains.
-* Certificates are stored in the mounted volume (C:\letsencrypt)
+### Issue a New Certificate
 
-2. Renew On-Demand
+Run the helper script with your email and domains:
 
-``` powershell
-Renew-TlsCert
-```
-
-* Runs certbot renew inside the container.
-* Certificates will only renew if they are within 30 days of expiry.
-* Add --force-renewal inside the function if you want to override.
-
-3. Schedule automatic renewal
-
-``` powershell
-AutoRenew-TlsCert
-```
-
-* Registers a Windows Scheduled Task named TLSAutoRenew.
-* Runs daily at 3 AM to check and renew certificates.
-* You can adjust the schedule by editing the function or task.
-
-
-## Test Dry Run
-
-``` powershell
-docker run --rm -v C:\letsencrypt:/etc/letsencrypt tls-artifact-robot certbot renew --dry-run
-```
-
-## Example Usage
-
-``` powershell
-docker build -t tls-artifact-robot .
-docker run --rm `
-  -v C:/letsencrypt:/etc/letsencrypt `
-  tls-artifact-robot `
-  certonly --standalone `
-  -d core.example.com `
-  -d dev.example.com `
-  -d db.example.com `
-  --non-interactive --agree-tos -m admin@example.com
+```bash
+./run-certbot-dns.sh admin@example.com app1.example.com
 ```
