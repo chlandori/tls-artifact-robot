@@ -31,3 +31,11 @@ Run the helper script with your email and domains:
 ```bash
 ./run-certbot-dns.sh admin@example.com app1.example.com
 ```
+
+### Export to PFX with password
+
+Exports from WSL to Windows Server C:\letsencrypt as a PFX (PKCS#12)
+
+```bash
+./export-to-pfx.sh app1.example.com
+```
